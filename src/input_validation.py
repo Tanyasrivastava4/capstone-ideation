@@ -1,9 +1,7 @@
 #src/input_validation.py
 
 """
-
 input_validation.py
-
 validates the input csv file before preprocessing
 """
 

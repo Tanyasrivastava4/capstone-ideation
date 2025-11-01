@@ -1,0 +1,35 @@
+# Core dependencies
+pandas
+numpy
+scikit-learn
+torch
+transformers
+sentence-transformers
+
+# Model + Summarization
+accelerate
+bitsandbytes
+
+# RAG and retrieval
+faiss-cpu
+rank-bm25
+
+# Visualization / reporting
+matplotlib
+seaborn
+reportlab
+
+# NLP preprocessing
+nltk
+regex
+
+# Logging and config management
+pyyaml
+tqdm
+
+# For human review & email/report automation
+smtplib
+email-validator
+
+# Optional but recommended (for clean logging and debugging)
+rich

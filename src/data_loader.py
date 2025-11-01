@@ -2,7 +2,6 @@
 import pandas as pd
 import os
 
-
 def load_dataset(path="data/raw/patient_reports.csv"):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Dataset not found at {path}")

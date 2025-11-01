@@ -1,90 +1,177 @@
-# src/model_predictor.py
 """
-Prediction module. If a fine-tuned HF model is available, use it.
-Otherwise use a simple rule-based fallback.
+model_predictor.py
+---------------------------------
+Predicts urgency level of patient report using DistilBERT (text classification).
 """
-import os
-import random
 
-HF_MODEL_PATH = os.environ.get("TRIAGE_MODEL_PATH", None)  # e.g. path or HF repo id
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+import torch
 
-# Try to import transformers pipeline if available
+# ✅ Load pretrained DistilBERT classifier
+# You can later replace with your fine-tuned model like "tanyasrivastava/medical-urgency-distilbert"
+MODEL_NAME = "distilbert-base-uncased"
+
 try:
-    from transformers import pipeline
-    _HF_AVAILABLE = True
-except Exception:
-    _HF_AVAILABLE = False
+    classifier = pipeline("text-classification", model=MODEL_NAME, tokenizer=MODEL_NAME)
+except Exception as e:
+    print(f"⚠️ Could not load model: {e}")
+    classifier = None
 
-# Rule-based fallback
-def _rule_based_predict(text, symptoms, age=None, gender=None):
-    txt = (text or "").lower()
-    urgency = "Low"
-    department = "General Medicine"
-    next_steps_hint = "Monitor symptoms; seek care if condition worsens."
 
-    if any(k in txt for k in ["chest pain", "shortness of breath", "loss of consciousness", "severe bleed", "blood in vomit"]):
-        urgency = "Emergency"
-        department = "Cardiology" if "chest" in txt else "Emergency"
-        next_steps_hint = "Seek emergency care immediately."
-    elif any(k in txt for k in ["fever", "cough", "dizziness", "vomiting", "nausea", "abdominal pain"]):
-        urgency = "Moderate"
-        department = "General Medicine"
-        next_steps_hint = "Consult a physician within 24 hours."
-    else:
-        urgency = "Routine"
-        department = "General Medicine"
-        next_steps_hint = "Schedule a routine check-up if persists."
+def predict_record(text, symptoms):
+    """
+    Predicts urgency level and confidence score for a given patient report.
 
-    # confidence heuristic
-    base = 0.5 + min(len(symptoms) * 0.08, 0.4)
-    noise = random.uniform(-0.08, 0.06)
-    confidence = round(max(0.01, min(0.99, base + noise)), 2)
+    Args:
+        text (str): Cleaned patient report text.
+        symptoms (list): List of extracted symptoms.
 
-    return {
-        "urgency": urgency,
-        "department": department,
-        "next_steps_hint": next_steps_hint,
-        "confidence": confidence
-    }
+    Returns:
+        dict: { 'urgency': str, 'confidence': float }
+    """
+    if not text or not isinstance(text, str):
+        return {"urgency": "Unknown", "confidence": 0.0}
 
-# HF wrapper
-_hf_pipeline = None
-if _HF_AVAILABLE and HF_MODEL_PATH:
+    if classifier is None:
+        print("⚠️ Model not loaded, returning default values.")
+        return {"urgency": "Unknown", "confidence": 0.0}
+
     try:
-        _hf_pipeline = pipeline("text-classification", model=HF_MODEL_PATH, top_k=5)
-    except Exception:
-        _hf_pipeline = None
+        # Combine text + symptoms to give model more context
+        combined_text = text
+        if symptoms:
+            combined_text += " Symptoms: " + ", ".join(symptoms)
 
-def predict_record(text: str, symptoms: list, age=None, gender=None):
-    """
-    Returns dict: urgency, department, next_steps_hint, confidence
-    If a HF model is available, returns model output (user needs to fine-tune model to return desired labels).
-    Otherwise returns rule-based output.
-    """
-    if _hf_pipeline:
-        # Example: your fine-tuned model should return labels like "Urgency_Emergency|Dept_Cardiology"
-        try:
-            # Use model to classify — this depends on how model was trained.
-            preds = _hf_pipeline(text[:512])
-            # pick top label and score; mapping logic here depends on label scheme
-            top = preds[0]
-            label = top.get("label", "")
-            score = float(top.get("score", 0.0))
-            # naive parsing: expecting "EMERGENCY__CARDIOLOGY" or similar
-            parts = label.replace("-", "_").split("__")
-            urgency = parts[0] if parts else "Routine"
-            department = parts[1] if len(parts) > 1 else "General Medicine"
-            return {
-                "urgency": urgency,
-                "department": department,
-                "next_steps_hint": "See provided guidance",
-                "confidence": round(score, 2)
-            }
-        except Exception:
-            return _rule_based_predict(text, symptoms, age, gender)
-    else:
-        return _rule_based_predict(text, symptoms, age, gender)
+        # Run prediction
+        result = classifier(combined_text, truncation=True)[0]
 
+        urgency = result.get("label", "Unknown")
+        confidence = round(float(result.get("score", 0.0)), 3)
+
+        # Normalize labels if model outputs like "LABEL_0", "LABEL_1", etc.
+        urgency_mapping = {
+            "LABEL_0": "Low",
+            "LABEL_1": "Medium",
+            "LABEL_2": "High"
+        }
+        urgency = urgency_mapping.get(urgency, urgency)
+
+        return {
+            "urgency": urgency,
+            "confidence": confidence
+        }
+
+    except Exception as e:
+        print(f"⚠️ Prediction failed: {e}")
+        return {"urgency": "Unknown", "confidence": 0.0}
+
+
+# ✅ Example test
+if __name__ == "__main__":
+    sample_text = "Patient reports severe chest pain and dizziness since morning."
+    symptoms = ["chest pain", "dizziness"]
+    prediction = predict_record(sample_text, symptoms)
+    print("🩸 Predicted urgency:", prediction)
+
+
+
+
+
+
+
+
+
+
+
+
+
+## src/model_predictor.py
+#"""
+#Prediction module. If a fine-tuned HF model is available, use it.
+#Otherwise use a simple rule-based fallback.
+#"""
+#import os
+#import random
+#
+#HF_MODEL_PATH = os.environ.get("TRIAGE_MODEL_PATH", None)  # e.g. path or HF repo id
+#
+## Try to import transformers pipeline if available
+#try:
+#    from transformers import pipeline
+#    _HF_AVAILABLE = True
+#except Exception:
+#    _HF_AVAILABLE = False
+#
+## Rule-based fallback
+#def _rule_based_predict(text, symptoms, age=None, gender=None):
+#    txt = (text or "").lower()
+#    urgency = "Low"
+#    department = "General Medicine"
+#    next_steps_hint = "Monitor symptoms; seek care if condition worsens."
+#
+#    if any(k in txt for k in ["chest pain", "shortness of breath", "loss of consciousness", "severe bleed", "blood in vomit"]):
+#        urgency = "Emergency"
+#        department = "Cardiology" if "chest" in txt else "Emergency"
+#        next_steps_hint = "Seek emergency care immediately."
+#    elif any(k in txt for k in ["fever", "cough", "dizziness", "vomiting", "nausea", "abdominal pain"]):
+#        urgency = "Moderate"
+#        department = "General Medicine"
+#        next_steps_hint = "Consult a physician within 24 hours."
+#    else:
+#        urgency = "Routine"
+#        department = "General Medicine"
+#        next_steps_hint = "Schedule a routine check-up if persists."
+#
+#    # confidence heuristic
+#    base = 0.5 + min(len(symptoms) * 0.08, 0.4)
+#    noise = random.uniform(-0.08, 0.06)
+#    confidence = round(max(0.01, min(0.99, base + noise)), 2)
+#
+#    return {
+#        "urgency": urgency,
+#        "department": department,
+#        "next_steps_hint": next_steps_hint,
+#        "confidence": confidence
+#    }
+#
+## HF wrapper
+#_hf_pipeline = None
+#if _HF_AVAILABLE and HF_MODEL_PATH:
+#    try:
+#        _hf_pipeline = pipeline("text-classification", model=HF_MODEL_PATH, top_k=5)
+#    except Exception:
+#        _hf_pipeline = None
+#
+#def predict_record(text: str, symptoms: list, age=None, gender=None):
+#    """
+#    Returns dict: urgency, department, next_steps_hint, confidence
+#    If a HF model is available, returns model output (user needs to fine-tune model to return desired labels).
+#    Otherwise returns rule-based output.
+#    """
+#    if _hf_pipeline:
+#        # Example: your fine-tuned model should return labels like "Urgency_Emergency|Dept_Cardiology"
+#        try:
+#            # Use model to classify — this depends on how model was trained.
+#            preds = _hf_pipeline(text[:512])
+#            # pick top label and score; mapping logic here depends on label scheme
+#            top = preds[0]
+#            label = top.get("label", "")
+#            score = float(top.get("score", 0.0))
+#            # naive parsing: expecting "EMERGENCY__CARDIOLOGY" or similar
+#            parts = label.replace("-", "_").split("__")
+#            urgency = parts[0] if parts else "Routine"
+#            department = parts[1] if len(parts) > 1 else "General Medicine"
+#            return {
+#                "urgency": urgency,
+#                "department": department,
+#                "next_steps_hint": "See provided guidance",
+#                "confidence": round(score, 2)
+#            }
+#        except Exception:
+#            return _rule_based_predict(text, symptoms, age, gender)
+#    else:
+#        return _rule_based_predict(text, symptoms, age, gender)
+#
 
 
 
