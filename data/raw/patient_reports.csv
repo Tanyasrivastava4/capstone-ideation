@@ -1,0 +1,26 @@
+patient_id,age,gender,report_text,urgency,department
+1,45,M,"Patient complains of chest pain and shortness of breath since today morning.",Emergency,Cardiology
+2,30,F,"Mild fever and cough for 2 days. No breathing difficulty.",Routine,General Medicine
+3,60,M,"Dizziness and vomiting after taking medication.",Moderate,General Medicine
+4,25,F,"Sore throat and mild headache.",Routine,ENT
+5,70,M,"Severe abdominal pain and blood in vomit since last night.",Emergency,Gastroenterology
+6,50,F,"Chronic back pain worsening over the last week, no numbness.",Moderate,Orthopedics
+7,22,M,"Fever, body ache, and fatigue for three days, no rash.",Moderate,General Medicine
+8,33,F,"Severe headache with blurred vision and nausea.",Emergency,Neurology
+9,40,M,"Painful urination and lower abdominal discomfort for 3 days.",Moderate,Urology
+10,55,F,"High blood pressure reading and mild chest tightness.",Moderate,Cardiology
+
+
+
+
+#patient_id,age,gender,report_text
+#1,45,M,"Patient complains of chest pain and shortness of breath since today morning."
+#2,30,F,"Mild fever and cough for 2 days. No breathing difficulty."
+#3,60,M,"Dizziness and vomiting after taking medication."
+#4,25,F,"Sore throat and mild headache."
+#5,70,M,"Severe abdominal pain and blood in vomit since last night."
+#6,50,F,"Chronic back pain worsening over the last week, no numbness."
+#7,22,M,"Fever, body ache, and fatigue for three days, no rash."
+#8,33,F,"Severe headache with blurred vision and nausea."
+#9,40,M,"Painful urination and lower abdominal discomfort for 3 days."
+#10,55,F,"High blood pressure reading and mild chest tightness."
