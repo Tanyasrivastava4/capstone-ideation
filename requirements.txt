@@ -1,6 +1,6 @@
 # Core dependencies
 pandas
-numpy
+numpy>=1.26
 scikit-learn
 torch
 transformers
@@ -28,8 +28,8 @@ pyyaml
 tqdm
 
 # For human review & email/report automation
-smtplib
-email-validator
+#smtplib
+#email-validator
 
 # Optional but recommended (for clean logging and debugging)
 rich
