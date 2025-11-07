@@ -1,13 +1,13 @@
 symptom,department,recommended_action
-chest pain,Cardiology,Visit cardiology within 24 hours; perform ECG and blood pressure check.
-shortness of breath,Cardiology,Seek emergency care if severe; otherwise, consult cardiologist.
-fever,General Medicine,Monitor temperature; take paracetamol and rest; visit doctor if persistent.
-cough,General Medicine,Hydrate and avoid irritants; consult if cough lasts more than 3 days.
-sore throat,ENT,Gargle with warm salt water; visit ENT if throat pain lasts more than 2 days.
-headache,Neurology,Take adequate rest; if recurring or severe, consult neurologist.
-vomiting,Gastroenterology,Stay hydrated; if continuous, consult gastroenterologist.
-dizziness,Neurology,Check blood pressure and sugar; consult neurologist if persistent.
-abdominal pain,Gastroenterology,Avoid heavy food; visit gastroenterologist if pain continues.
-back pain,Orthopedics,Apply heat and rest; consult orthopedist if pain lasts >3 days.
-skin rash,Dermatology,Avoid allergens; apply soothing cream; consult dermatologist if rash spreads.
-fatigue,Endocrinology,Check thyroid and hemoglobin levels; consult endocrinologist if frequent.
+chest pain,"Cardiology","Visit cardiology within 24 hours, perform ECG and blood pressure check".
+shortness of breath,"Cardiology","Seek emergency care if severe otherwise, consult cardiologist".
+fever,"General Medicine","Monitor temperature take paracetamol and rest, visit doctor if persistent".
+cough,"General Medicine","Hydrate and avoid irritants, consult if cough lasts more than 3 days".
+sore throat,"ENT","Gargle with warm salt water, visit ENT if throat pain lasts more than 2 days".
+headache,"Neurology","Take adequate rest if recurring or severe, consult neurologist".
+vomiting,"Gastroenterology","Stay hydrated, if continuous, consult gastroenterologist".
+dizziness,"Neurology","Check blood pressure and sugar; consult neurologist if persistent".
+abdominal pain,"Gastroenterology","Avoid heavy food; visit gastroenterologist if pain continues".
+back pain,"Orthopedics","Apply heat and rest; consult orthopedist if pain lasts >3 days".
+skin rash,"Dermatology","Avoid allergens; apply soothing cream; consult dermatologist if rash spreads".
+fatigue,"Endocrinology","Check thyroid and hemoglobin levels; consult endocrinologist if frequent".
