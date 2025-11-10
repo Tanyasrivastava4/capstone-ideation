@@ -59,7 +59,7 @@ def get_similar_cases(patient_report: str, top_k: int = 3):
     similarities = cosine_similarity(query_vec, tfidf_matrix)
     top_indices = similarities.argsort()[0][-top_k:][::-1]
 
-    similar_cases = medical_kb.iloc[top_indices][["symptom", "disease", "department", "recommended_action"]]
+    similar_cases = medical_kb.iloc[top_indices][["symptom","department", "recommended_action"]]
     context_text = similar_cases.to_string(index=False)
 
     # --- Step 2: Prepare context for Mistral ---
